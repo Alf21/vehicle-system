@@ -7,29 +7,52 @@ package me.alf21.vehiclesystem;
 
 import java.io.IOException;
 
-
-
+import me.alf21.vehiclesystem.Tacho;
+import me.alf21.tacho.BlockBarTacho;
 import me.alf21.vehiclesystem.VehicleSystem;
+import net.gtaun.shoebill.common.command.CommandGroup;
+import net.gtaun.shoebill.common.command.PlayerCommandManager;
 import net.gtaun.shoebill.constant.PlayerState;
-import net.gtaun.shoebill.event.player.PlayerConnectEvent;
-import net.gtaun.shoebill.event.player.PlayerDeathEvent;
-import net.gtaun.shoebill.event.player.PlayerDisconnectEvent;
-import net.gtaun.shoebill.event.player.PlayerKeyStateChangeEvent;
-import net.gtaun.shoebill.event.player.PlayerSpawnEvent;
 import net.gtaun.shoebill.event.player.PlayerStateChangeEvent;
-import net.gtaun.shoebill.event.player.PlayerTakeDamageEvent;
-import net.gtaun.shoebill.event.player.PlayerWeaponShotEvent;
 import net.gtaun.shoebill.object.Player;
 import net.gtaun.util.event.EventManager;
+import net.gtaun.util.event.HandlerPriority;
 
 public class PlayerManager
 {	
 	public EventManager eventManager;
+	public PlayerCommandManager commandManager;
 	public PlayerData playerLifecycle;
 
 	public PlayerManager() throws IOException
 	{	
 		eventManager = VehicleSystem.getInstance().getEventManagerInstance();
+		
+		commandManager = new PlayerCommandManager(eventManager);
+		commandManager.registerCommands(new Commands());
+        
+		commandManager.installCommandHandler(HandlerPriority.NORMAL);
+		
+		CommandGroup playerCommands = new CommandGroup(); 
+		playerCommands.registerCommands(new Commands()); 
+		commandManager.registerChildGroup(playerCommands, "player");
+		
+		commandManager.setUsageMessageSupplier((player, command, prefix, params, help) -> { 
+			String message;
+            if(help == null)
+            {
+            	message = prefix + command;
+	            for (String param : params) {
+	                message += " [" + param + "]"; 
+	            }
+            }
+            else {
+            	message = help;
+            }
+            return message; 
+		}); 
+		
+	//--
 
 /*		eventManager.registerHandler(PlayerUpdateEvent.class, (e) -> {
 			Player player = e.getPlayer();
@@ -50,41 +73,11 @@ public class PlayerManager
 				playerLifecycle.getTacho().destroy();
 				playerLifecycle.setTacho(null);
 			}
-			if(e.getPlayer().getState() == PlayerState.DRIVER || e.getPlayer().getState() == PlayerState.PASSENGER) {
-				playerLifecycle.setTacho(new Tacho(player));
+			if(player.getState() == PlayerState.DRIVER || player.getState() == PlayerState.PASSENGER) {
+				playerLifecycle.setTacho((Tacho) new BlockBarTacho(player));
 				playerLifecycle.getTacho().create();
 				playerLifecycle.getTacho().show();
 			}
-		});
-		
-
-
-		eventManager.registerHandler(PlayerWeaponShotEvent.class, (e) -> {
-
-		});
-
-		eventManager.registerHandler(PlayerTakeDamageEvent.class, (e) -> {
-
-		});
-
-		eventManager.registerHandler(PlayerConnectEvent.class, (e) -> {
-
-		});
-		
-		eventManager.registerHandler(PlayerDisconnectEvent.class, (e) -> {
-
-		});
-
-		eventManager.registerHandler(PlayerDeathEvent.class, (e) -> {
-
-		});
-
-		eventManager.registerHandler(PlayerKeyStateChangeEvent.class, (e) -> {
-
-		});
-		
-		eventManager.registerHandler(PlayerSpawnEvent.class, (e) -> {
-			
 		});
 	}
 

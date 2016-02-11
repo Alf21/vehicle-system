@@ -5,6 +5,7 @@
 
 package me.alf21.vehiclesystem;
 
+import me.alf21.vehiclesystem.Tacho;
 import net.gtaun.shoebill.common.player.PlayerLifecycleObject;
 import net.gtaun.shoebill.object.Player;
 import net.gtaun.util.event.EventManager;
@@ -33,11 +34,19 @@ public class PlayerData extends PlayerLifecycleObject {
 		return player;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.gtaun.shoebill.common.AbstractShoebillContext#onInit()
+	 */
 	@Override 
 	protected void onInit() { 
 		
 	} 
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.gtaun.shoebill.common.AbstractShoebillContext#onDestroy()
+	 */
 	@Override 
 	protected void onDestroy() { 
 		if(tacho != null && !tacho.isDestroyed())

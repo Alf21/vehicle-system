@@ -32,6 +32,10 @@ public class VehicleSystem extends Plugin {
 		return instance;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see net.gtaun.shoebill.resource.Resource#onDisable()
+	 */
 	@Override
 	protected void onDisable() throws Throwable {
 		playerLifecycleHolder.destroy();
@@ -42,6 +46,10 @@ public class VehicleSystem extends Plugin {
 		System.out.println("[VEHICLESYSTEM] uninitialized");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.gtaun.shoebill.resource.Resource#onEnable()
+	 */
 	@Override
 	protected void onEnable() throws Throwable {
 		instance = this;
@@ -70,7 +78,7 @@ public class VehicleSystem extends Plugin {
     }
 
 	public static VehicleData getVehicleData(Player player) {
-		//initialize the vehicleDatas and match them
+		//TODO initialize the vehicleDatas and match them
 		return null;
 	}
 }

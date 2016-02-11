@@ -11,25 +11,26 @@ public class Calculation {
 		Vehicle vehicle = vehicleData.getVehicle();
 		if(vehicle != null) {
 			Velocity velocity = vehicle.getVelocity(); 
-		  // speed = (float) Math.sqrt(((velocity.getX()*velocity.getX())+(velocity.getY()*velocity.getY())+(velocity.getZ()*velocity.getZ())))*100;
-		  // 179.28625 = factor
-		  // calculate in km/h
-		  // speed *= 1.609344f; //transform from mp/h to km/h
 			speed = (float) Math.sqrt(((velocity.getX()*velocity.getX())+(velocity.getY()*velocity.getY())+(velocity.getZ()*velocity.getZ())))*136.666667f;
 		}
 		return speed;
 	}
 	
-	public static Color getBoxColor(Color startColor, Color endColor, float value, float maxValue) {
+	public static Color getBoxColor(Color maxColor, Color minColor, float value, float maxValue) {
 		float factor = value / maxValue;
-		int	r =	startColor.getR() + Math.round((endColor.getR()-startColor.getR()) * factor),
-			g =	startColor.getG() + Math.round((endColor.getG()-startColor.getG()) * factor),
-			b =	startColor.getB() + Math.round((endColor.getB()-startColor.getB()) * factor),
-			a =	startColor.getA() + Math.round((endColor.getA()-startColor.getA()) * factor);
+		int	r =	maxColor.getR() + Math.round((minColor.getR()-maxColor.getR()) * factor),
+			g =	maxColor.getG() + Math.round((minColor.getG()-maxColor.getG()) * factor),
+			b =	maxColor.getB() + Math.round((minColor.getB()-maxColor.getB()) * factor),
+			a =	maxColor.getA() + Math.round((minColor.getA()-maxColor.getA()) * factor);
 		if(r > 255)	r = 255;	if(r < 0) r = 0;
 		if(g > 255)	g = 255;	if(g < 0) g = 0;
 		if(b > 255)	b = 255;	if(b < 0) b = 0;
 		if(a > 255)	a = 255;	if(a < 0) a = 0;
 		return new Color(r,g,b,a);
 	}
+	/*
+	public static float getTankVerbrauch() {
+		//TODO increase when Engine is toggled, lights are on, Klimaanlage, Radio usw...
+	}
+	*/
 }
