@@ -343,7 +343,6 @@ public class BlockBarTacho extends Tacho {
 			
 			healthBar.hide();
 			tankBar.hide();
-			speedValue.hide();
 			
 			healthBar.destroy();
 			createHealthBar();
@@ -353,12 +352,10 @@ public class BlockBarTacho extends Tacho {
 			
 			healthValue.setText((int) vehicle.getHealth()>=250?String.valueOf((int) vehicle.getHealth()):"FIRE"); //TODO when does it burn
 			tankValue.setText((int) vehicleData.getTank()>=1?String.valueOf((int) vehicleData.getTank()):"empty");
-			
 			speedValue.setText(String.valueOf((int) Calculation.getSpeed(vehicleData)));
 	
 			healthBar.show();
 			tankBar.show();
-			speedValue.show();
 		}
 	}
 	

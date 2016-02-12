@@ -10,6 +10,7 @@ import net.gtaun.shoebill.object.Player;
 import net.gtaun.shoebill.object.PlayerTextdraw;
 import net.gtaun.shoebill.object.Timer;
 import net.gtaun.shoebill.object.Vehicle;
+import me.alf21.textdraw.BoxHeight;
 import me.alf21.vehiclesystem.Calculation;
 import me.alf21.vehiclesystem.Tacho;
 import me.alf21.vehiclesystem.VehicleData;
@@ -17,11 +18,16 @@ import me.alf21.vehiclesystem.VehicleSystem;
 
 
 public class RealTacho extends Tacho {
+	private static final Color 	COLOR_GREEN = new Color(0,150,0,255),
+								COLOR_RED = new Color(150,0,0,255);
 	
 	private Player 			player;
 	private PlayerTextdraw	box,
 							mainDot,
-							designMainDot;
+							designMainDot,
+							vehicleName,
+							healthBar,
+							tankBar;
 	private ArrayList<PlayerTextdraw> values, dots;
 	private boolean			created;
 	private VehicleData 	vehicleData;
@@ -63,6 +69,24 @@ public class RealTacho extends Tacho {
 			box.setBoxColor(new Color(255,255,255,50));
 			box.setTextSize(0, 142);
 			box.setSelectable(false);
+			
+			vehicleName = PlayerTextdraw.create(player, 564, 340);
+			vehicleName.setText(vehicle.getModelName());
+			vehicleName.setAlignment(TextDrawAlign.CENTER);
+			vehicleName.setBackgroundColor(Color.BLACK);
+			vehicleName.setFont(TextDrawFont.get(1));
+			vehicleName.setLetterSize(0.36f, 0.9f);
+			vehicleName.setColor(Color.WHITE);
+			vehicleName.setOutlineSize(1);
+			vehicleName.setProportional(true);
+			vehicleName.setUseBox(true);
+			vehicleName.setBoxColor(new Color(255,255,255,50));
+			vehicleName.setTextSize(0, -150);
+			vehicleName.setSelectable(false);
+
+			createHealthBar();
+
+			createTankBar();
 	
 			mainDot = PlayerTextdraw.create(player, 546, 404);
 			mainDot.setText("|");
@@ -85,9 +109,11 @@ public class RealTacho extends Tacho {
 			designMainDot.setSelectable(false);
 			
 			dots = new ArrayList<PlayerTextdraw>();
-			createDot(1, 0);
-			createDot(2, 0);
-			createDot(3, 0);
+			
+			float speed = Calculation.getSpeed(vehicleData);
+			for(int i = 1; i <= 6; i++) {
+				createDot(i, speed);
+			}
 			
 			values = new ArrayList<PlayerTextdraw>();
 			values.add(PlayerTextdraw.create(player, 507, 417, "0"));
@@ -121,6 +147,44 @@ public class RealTacho extends Tacho {
 		}
 	}
 	
+	private void createHealthBar() {
+		BoxHeight boxHeight = new BoxHeight(534, 385, 435, 0.5f, -0.5f, 5, vehicleData.getVehicle().getHealth(), 1000);
+		
+		healthBar = PlayerTextdraw.create(player, boxHeight.getPosition());
+		healthBar.setText("_");
+		healthBar.setAlignment(TextDrawAlign.CENTER);
+		healthBar.setBackgroundColor(Color.BLACK);
+		healthBar.setFont(TextDrawFont.get(1));
+		healthBar.setLetterSize(boxHeight.getLetterSize());
+		healthBar.setColor(Color.WHITE);
+		healthBar.setOutlineSize(0);
+		healthBar.setProportional(true);
+		healthBar.setShadowSize(1);
+		healthBar.setUseBox(true);
+		healthBar.setBoxColor(Calculation.getBoxColor(COLOR_RED, COLOR_GREEN, vehicleData.getVehicle().getHealth(), 1000));
+		healthBar.setTextSize(0, 11);
+		healthBar.setSelectable(false);
+	}
+
+	private void createTankBar() {
+		BoxHeight boxHeight = new BoxHeight(584, 385, 435, 0.5f, -0.5f, 5, vehicleData.getTank(), 100);
+		
+		tankBar = PlayerTextdraw.create(player, boxHeight.getPosition());
+		tankBar.setText("_");
+		tankBar.setAlignment(TextDrawAlign.CENTER);
+		tankBar.setBackgroundColor(Color.BLACK);
+		tankBar.setFont(TextDrawFont.get(1));
+		tankBar.setLetterSize(boxHeight.getLetterSize());
+		tankBar.setColor(Color.WHITE);
+		tankBar.setOutlineSize(0);
+		tankBar.setProportional(true);
+		tankBar.setShadowSize(1);
+		tankBar.setUseBox(true);
+		tankBar.setBoxColor(Calculation.getBoxColor(COLOR_RED, COLOR_GREEN, vehicleData.getTank(), 100));
+		tankBar.setTextSize(0, 11);
+		tankBar.setSelectable(false);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see me.alf21.vehiclesystem.Tacho#destroy()
@@ -152,14 +216,21 @@ public class RealTacho extends Tacho {
 			dots = null;
 		}
 		
-		designMainDot = mainDot = box = null;
+		designMainDot.destroy();
+		mainDot.destroy();
+		tankBar.destroy();
+		healthBar.destroy();
+		vehicleName.destroy();
+		box.destroy();
+		
+		designMainDot = mainDot = tankBar = healthBar = vehicleName = box = null;
 		
 		created = false;
 	}
 	
 	private void createDot(int value, float speed) {
-		float r = 14;
-		PlayerTextdraw dot = PlayerTextdraw.create(player, getDotLocation(r*value, new Vector2D(551.5f, 409), speed));
+		float r = 7;
+		PlayerTextdraw dot = PlayerTextdraw.create(player, getDotVector2d(3+r*value, new Vector2D(551.5f, 412), speed));
 		dot.setText("|");
 		dot.setBackgroundColor(new Color(0,0,0,100));
 		dot.setFont(TextDrawFont.get(1));
@@ -171,15 +242,15 @@ public class RealTacho extends Tacho {
 		dots.add(dot);
 	}
 	
-	private Vector2D getDotLocation(float radius, Vector2D mainVector2d, float speed) {
+	private Vector2D getDotVector2d(float radius, Vector2D mainVector2d, float speed) {
 		double cycleSize = 2.0 * Math.PI * (double) radius * (180.0 / 360.0);
 		float currentWidth = (speed / 200f) * (float) cycleSize;
-		float angle = currentWidth * 180f / ((float) Math.PI * radius);
+		double angle = (Math.round(currentWidth * 180f / ((float) Math.PI * radius))*100)/100;
 		
-		float x = (radius * (float) Math.cos(Math.toRadians(angle)));
-		float y = (radius * (float) Math.sin(Math.toRadians(angle)));
+		double x = (radius * Math.cos(Math.toRadians(angle)));
+		double y = (radius * Math.sin(Math.toRadians(angle)));
 		
-		return new Vector2D(mainVector2d.getX()-x, mainVector2d.getY()-y);
+		return new Vector2D(mainVector2d.getX() - (float) x, mainVector2d.getY() - (float) y);
 	}
 
 	/*
@@ -200,16 +271,26 @@ public class RealTacho extends Tacho {
 				player.sendGameText(3000, 3, "Tank is empty!");
 			}
 			
+			healthBar.hide();
+			tankBar.hide();
+			
+			healthBar.destroy();
+			createHealthBar();
+			tankBar.destroy();
+			createTankBar();
+			
+			healthBar.show();
+			tankBar.show();
+			
 			for(PlayerTextdraw dot : dots) {
 				dot.hide();
 				dot.destroy();
 			}
 			
 			float speed = Calculation.getSpeed(vehicleData);
-			
-			createDot(1, speed);
-			createDot(2, speed);
-			createDot(3, speed);
+			for(int i = 1; i <= 6; i++) {
+				createDot(i, speed);
+			}
 			
 			for(PlayerTextdraw dot : dots) {
 				dot.show();
@@ -224,6 +305,9 @@ public class RealTacho extends Tacho {
 	@Override
 	public boolean isDestroyed() {
 		if(box != null
+		|| vehicleName != null
+		|| healthBar != null
+		|| tankBar != null
 		|| mainDot != null
 		|| designMainDot != null
 		|| dots != null
@@ -249,6 +333,9 @@ public class RealTacho extends Tacho {
 		}
 		designMainDot.hide();
 		mainDot.hide();
+		tankBar.hide();
+		healthBar.hide();
+		vehicleName.hide();
 		box.hide();
 	}
 	
@@ -259,6 +346,9 @@ public class RealTacho extends Tacho {
 	@Override
 	public void show() {
 		box.show();
+		vehicleName.show();
+		healthBar.show();
+		tankBar.show();
 		mainDot.show();
 		designMainDot.show();
 		for(PlayerTextdraw dot : dots) {

@@ -49,7 +49,9 @@ public class PlayerData extends PlayerLifecycleObject {
 	 */
 	@Override 
 	protected void onDestroy() { 
-		if(tacho != null && !tacho.isDestroyed())
+		if(tacho != null && !tacho.isDestroyed()) {
 			tacho.destroy();
+			tacho = null;
+		}
 	}
 }
