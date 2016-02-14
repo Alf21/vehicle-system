@@ -125,6 +125,7 @@ public class VehicleSystem extends Plugin {
 	}
 	
     private void initializeVehicleBasicDatas() {
+    	handlings = new ArrayList<Handling>();
     	handlings.add(new Handling("LANDSTAL", VehicleType.CAR, 1700.0, 5008.3, 2.5, 0.0, 0.0, -0.3, 85, 0.75, 0.85, 0.5, 5, 160.0, 25.0, 20.0, DriveType.FOUR, EngineType.D, 6.2, 0.60, 0, 35.0, 2.4, 0.08, 0.0, 0.28, -0.14, 0.5, 0.25, 0.27, 0.23, 25000, "20", "500002", 0, 1, 0));
     	handlings.add(new Handling("BRAVURA", VehicleType.CAR, 1300.0, 2200.0, 1.7, 0.0, 0.3, 0.0, 70, 0.65, 0.80, 0.52, 5, 160.0, 15.0, 10.0, DriveType.F, EngineType.P, 08.0, 0.80, 0, 30.0, 1.3, 0.08, 0.0, 0.31, -0.15, 0.57, 0.0, 0.26, 0.50, 9000, "1", "1", 0, 0, 0));
     	handlings.add(new Handling("BUFFALO", VehicleType.CAR, 1500.0, 4000.0, 2.0, 0.0, 0.0, -0.1, 85, 0.7, 0.9, 0.5, 5, 200.0, 28.0, 5.0, DriveType.R, EngineType.P, 11.0, 0.45, 0, 30.0, 1.2, 0.12, 0.0, 0.28, -0.24, 0.5, 0.4, 0.25, 0.50, 35000, "2800", "10200000", 1, 1, 0));

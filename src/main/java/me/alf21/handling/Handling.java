@@ -1,5 +1,6 @@
 package me.alf21.handling;
 
+import me.alf21.handling.animData.AnimData;
 import me.alf21.handling.bikeData.BikeData;
 import me.alf21.handling.boatData.BoatData;
 import me.alf21.handling.planeData.PlaneData;
@@ -25,49 +26,49 @@ public class Handling {
 		private	String handlingFlagsHEX;
 		private	int frontLights;
 		private	int rearLights;
-		private	int vehicleAnimGroup;
+		private	AnimData animData;
 		private BoatData boatData;
 		private BikeData bikeData;
 		private PlaneData planeData;
 		
 	/**
-	 * @param name
-	 * @param vehicleType
-	 * @param mass
-	 * @param turnmass
-	 * @param drag
-	 * @param centreOfMassX
-	 * @param centreOfMassY
-	 * @param centreOfMassZ
-	 * @param boy
-	 * @param tractionMultiplier
-	 * @param tractionLoss
-	 * @param tractionBias
-	 * @param transmissionNumberOfGears
-	 * @param transmissionMaxVelocity
-	 * @param transmissionEngineAcceleration
-	 * @param transmissionEngineInertia
-	 * @param driveType
-	 * @param engineType
-	 * @param brakeDeceleration
-	 * @param brakeBias
-	 * @param bABS
-	 * @param steeringLock
-	 * @param suspensionForceLevel
-	 * @param suspensionDampingLevel
-	 * @param suspensionHighSpdComDamp
-	 * @param suspensionUpperLimit
-	 * @param suspensionLowerLimit
-	 * @param suspensionBiasBetweenFrontAndRear
-	 * @param suspensionAntiDiveMultiplier
-	 * @param seat
-	 * @param col
-	 * @param cost
-	 * @param modelFlagsHEX
-	 * @param handlingFlagsHEX
-	 * @param frontLights
-	 * @param rearLights
-	 * @param vehicleAnimGroup
+	 * @param name vehicle identifier [14 characters max]
+	 * @param vehicleType type of the vehicle
+	 * @param mass fMass, [1.0 to 50000.0]
+	 * @param turnmass fTurnMass, //was////Dimensions.x [0.0 > x > 20.0]
+	 * @param drag fDragMult, //was////Dimensions.y [0.0 > x > 20.0]
+	 * @param centreOfMassX CentreOfMass.x, [-10.0 > x > 10.0]
+	 * @param centreOfMassY CentreOfMass.y, [-10.0 > y > 10.0]
+	 * @param centreOfMassZ CentreOfMass.z, [-10.0 > z > 10.0]
+	 * @param boy nPercentSubmerged,	[10 to 120]
+	 * @param tractionMultiplier fTractionMultiplier, [0.5 to 2.0]
+	 * @param tractionLoss fTractionLoss, [0.0 > x > 1.0]
+	 * @param tractionBias fTractionBias, [0.0 > x > 1.0]
+	 * @param transmissionNumberOfGears TransmissionData.nNumberOfGears, [1 to 4]
+	 * @param transmissionMaxVelocity TransmissionData.fMaxVelocity, [5.0 to 150.0]
+	 * @param transmissionEngineAcceleration TransmissionData.fEngineAcceleration, [0.1 to 10.0]
+	 * @param transmissionEngineInertia TransmissionData.fEngineInertia,	[0.0 to 50.0]
+	 * @param driveType TransmissionData.nDriveType,	[F/R/4 (FOUR)]
+	 * @param engineType TransmissionData.nEngineType, [P/D/E]
+	 * @param brakeDeceleration fBrakeDeceleration, [0.1 to 10.0]
+	 * @param brakeBias fBrakeBias, [0.0 > x > 1.0]
+	 * @param bABS bABS, [0/1]
+	 * @param steeringLock fSteeringLock, [10.0 to 40.0]
+	 * @param suspensionForceLevel  fSuspensionForceLevel, not [L/M/H]
+	 * @param suspensionDampingLevel fSuspensionDampingLevel, not [L/M/H]
+	 * @param suspensionHighSpdComDamp fSuspensionHighSpdComDamp, often zero - 200.0 or more for bouncy vehicles
+	 * @param suspensionUpperLimit suspension upper limit
+	 * @param suspensionLowerLimit suspension lower limit
+	 * @param suspensionBiasBetweenFrontAndRear suspension bias between front and rear
+	 * @param suspensionAntiDiveMultiplier suspension anti-dive multiplier
+	 * @param seat fSeatOffsetDistance, // ped seat position offset towards centre of car
+	 * @param col fCollisionDamageMultiplier, [0.2 to 5.0]
+	 * @param cost nMonetaryValue, [1 to 100000]
+	 * @param modelFlagsHEX modelFlags!!!  WARNING - Now written HEX for easier reading of flags
+	 * @param handlingFlagsHEX handlingFlags - written in HEX
+	 * @param frontLights front lights (0 = long, 1 = small, 2 = big, 3 = tall)
+	 * @param rearLights rear lights (0 = long, 1 = small, 2 = big, 3 = tall)
+	 * @param vehicleAnimGroup vehicle anim group (based on enum values of AnimData)
 	 */
 	public Handling(
 			String name,
@@ -125,7 +126,14 @@ public class Handling {
 		this.handlingFlagsHEX = handlingFlagsHEX;
 		this.frontLights = frontLights;
 		this.rearLights = rearLights;
-		this.vehicleAnimGroup = vehicleAnimGroup;
+		int i = 0;
+		for(AnimData animData : AnimData.values()) {
+			if(i == vehicleAnimGroup) {
+				this.animData = animData;
+				break;
+			}
+			i++;
+		}
 	}
 	
 	/**
@@ -278,10 +286,10 @@ public class Handling {
 	}
 	
 	/**
-	 * @return vehicle anim group
+	 * @return vehicle anim data (instead of the vehicle's anim group)
 	 */
-	public int getVehicleAnimGroup() {
-		return vehicleAnimGroup;
+	public AnimData getVehAnimData() {
+		return animData;
 	}
 	
 	/**

@@ -52,6 +52,9 @@ public class IndividuelRealTacho extends Tacho {
 		Vehicle vehicle = player.getVehicle();
 		if(vehicle != null) {
 			maxSpeed = VehicleSystem.getHandling(vehicle.getModelName()).getTransmission().getMaxVelocity(); //
+			while(maxSpeed % speedSteps != 0) {
+				maxSpeed++;
+			}
 			
 			vehicleData = VehicleSystem.getVehicleData(player);
 			if(vehicleData == null) {
