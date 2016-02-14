@@ -48,9 +48,10 @@ public class VehicleData implements Destroyable {
 	 */
 	@Override
 	public void destroy() {
-		if(vehicle != null)
+		if(vehicle != null) {
 			vehicle.destroy();
-		vehicle = null;
+			vehicle = null;
+		}
 	}
 
 	/*

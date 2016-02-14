@@ -17,9 +17,13 @@ import me.alf21.vehiclesystem.VehicleData;
 import me.alf21.vehiclesystem.VehicleSystem;
 
 
-public class RealTacho extends Tacho {
+public class IndividuelRealTacho extends Tacho {
 	private static final Color 	COLOR_GREEN = new Color(0,150,0,255),
 								COLOR_RED = new Color(150,0,0,255);
+	private static double tachoAngle = 190;
+	private static double maxSpeed = 240;
+	private static final int speedSteps = 20;
+	private static Color color = new Color(0,0,150,50);
 	
 	private Player 			player;
 	private PlayerTextdraw	box,
@@ -34,7 +38,7 @@ public class RealTacho extends Tacho {
 	private Timer 			timer;
 	
 	
-	public RealTacho(Player player) {
+	public IndividuelRealTacho(Player player) {
 		super(player);
 		this.player = player;
 	}
@@ -47,6 +51,8 @@ public class RealTacho extends Tacho {
 	public void create() {
 		Vehicle vehicle = player.getVehicle();
 		if(vehicle != null) {
+			maxSpeed = VehicleSystem.getHandling(vehicle.getModelName()).getTransmission().getMaxVelocity(); //
+			
 			vehicleData = VehicleSystem.getVehicleData(player);
 			if(vehicleData == null) {
 				vehicleData = new VehicleData(vehicle);
@@ -66,7 +72,7 @@ public class RealTacho extends Tacho {
 			box.setProportional(true);
 			box.setShadowSize(1);
 			box.setUseBox(true);
-			box.setBoxColor(new Color(255,255,255,50));
+			box.setBoxColor(color);
 			box.setTextSize(0, 142);
 			box.setSelectable(false);
 			
@@ -80,7 +86,7 @@ public class RealTacho extends Tacho {
 			vehicleName.setOutlineSize(1);
 			vehicleName.setProportional(true);
 			vehicleName.setUseBox(true);
-			vehicleName.setBoxColor(new Color(255,255,255,50));
+			vehicleName.setBoxColor(color);
 			vehicleName.setTextSize(0, -150);
 			vehicleName.setSelectable(false);
 
@@ -88,7 +94,7 @@ public class RealTacho extends Tacho {
 
 			createTankBar();
 	
-			mainDot = PlayerTextdraw.create(player, 546, 404);
+			mainDot = PlayerTextdraw.create(player, maxSpeed>=100?549:551, 404);
 			mainDot.setText("|");
 			mainDot.setBackgroundColor(Color.BLACK);
 			mainDot.setFont(TextDrawFont.get(1));
@@ -98,7 +104,7 @@ public class RealTacho extends Tacho {
 			mainDot.setProportional(true);
 			mainDot.setSelectable(false);
 	
-			designMainDot = PlayerTextdraw.create(player, 551.5f, 412.5f);
+			designMainDot = PlayerTextdraw.create(player, maxSpeed>=100?554.5f:556.5f, 412.5f);
 			designMainDot.setText("|");
 			designMainDot.setBackgroundColor(Color.BLACK);
 			designMainDot.setFont(TextDrawFont.get(1));
@@ -116,27 +122,8 @@ public class RealTacho extends Tacho {
 			}
 			
 			values = new ArrayList<PlayerTextdraw>();
-			values.add(PlayerTextdraw.create(player, 507, 417, "0"));
-			values.add(PlayerTextdraw.create(player, 504, 401, "20"));
-			values.add(PlayerTextdraw.create(player, 511, 385, "40"));
-			values.add(PlayerTextdraw.create(player, 521, 371, "60"));
-			values.add(PlayerTextdraw.create(player, 537, 362, "80"));
-			values.add(PlayerTextdraw.create(player, 559, 357, "100"));
-			values.add(PlayerTextdraw.create(player, 584, 362, "120"));
-			values.add(PlayerTextdraw.create(player, 601, 371, "140"));
-			values.add(PlayerTextdraw.create(player, 612, 385, "160"));
-			values.add(PlayerTextdraw.create(player, 617, 401, "180"));
-			values.add(PlayerTextdraw.create(player, 620, 417, "200"));
-			
-			for(PlayerTextdraw value : values) {
-				value.setAlignment(TextDrawAlign.CENTER);
-				value.setBackgroundColor(Color.BLACK);
-				value.setFont(TextDrawFont.get(2));
-				value.setLetterSize(0.3f, 1);
-				value.setColor(Color.WHITE);
-				value.setOutlineSize(1);
-				value.setProportional(true);
-				value.setSelectable(false);
+			for(int i = 0; i <= (int) maxSpeed / speedSteps; i++) {
+				createValue(i);
 			}
 			
 			timer = Timer.create(100, (factualInterval) -> {
@@ -148,7 +135,7 @@ public class RealTacho extends Tacho {
 	}
 	
 	private void createHealthBar() {
-		BoxHeight boxHeight = new BoxHeight(534, 385, 435, 0.5f, -0.5f, 5, vehicleData.getVehicle().getHealth(), 1000);
+		BoxHeight boxHeight = new BoxHeight(maxSpeed>=100?532:534, 385, 435, 0.5f, -0.5f, 5, vehicleData.getVehicle().getHealth(), 1000);
 		
 		healthBar = PlayerTextdraw.create(player, boxHeight.getPosition());
 		healthBar.setText("_");
@@ -167,7 +154,7 @@ public class RealTacho extends Tacho {
 	}
 
 	private void createTankBar() {
-		BoxHeight boxHeight = new BoxHeight(584, 385, 435, 0.5f, -0.5f, 5, vehicleData.getTank(), 100);
+		BoxHeight boxHeight = new BoxHeight(maxSpeed>=100?592:594, 385, 435, 0.5f, -0.5f, 5, vehicleData.getTank(), 100);
 		
 		tankBar = PlayerTextdraw.create(player, boxHeight.getPosition());
 		tankBar.setText("_");
@@ -228,9 +215,38 @@ public class RealTacho extends Tacho {
 		created = false;
 	}
 	
+	private void createValue(int i) {
+		float r = 56;
+		Vector2D vector2d = new Vector2D(maxSpeed>=100?562:564, 415);
+		double angle = getDotAngle(r, vector2d, i*speedSteps);
+		
+		TextDrawAlign align = TextDrawAlign.CENTER;
+		if(angle <= 70.0) 
+			align = TextDrawAlign.RIGHT;
+		else if(angle >= 110.0)
+			align = TextDrawAlign.LEFT;
+		else {
+			if(angle > 90)
+				angle += 4;
+			else if(angle < 90)
+				angle -= 4;
+		}
+		
+		PlayerTextdraw value = PlayerTextdraw.create(player, getDotVector2dFromAngle(r, vector2d, angle), String.valueOf(i*speedSteps));		
+		value.setAlignment(align);
+		value.setBackgroundColor(Color.BLACK);
+		value.setFont(TextDrawFont.get(2));
+		value.setLetterSize(0.2f, 0.8f);
+		value.setColor(Color.WHITE);
+		value.setOutlineSize(1);
+		value.setProportional(true);
+		value.setSelectable(false);
+		values.add(value);
+	}
+	
 	private void createDot(int value, double speed) {
 		float r = 7;
-		PlayerTextdraw dot = PlayerTextdraw.create(player, getDotVector2d(3+r*value, new Vector2D(551.5f, 412), speed));
+		PlayerTextdraw dot = PlayerTextdraw.create(player, getDotVector2dFromSpeed(3+r*value, new Vector2D(maxSpeed>=100?554.5f:556.5f, 412), speed));
 		dot.setText("|");
 		dot.setBackgroundColor(new Color(0,0,0,100));
 		dot.setFont(TextDrawFont.get(1));
@@ -242,15 +258,28 @@ public class RealTacho extends Tacho {
 		dots.add(dot);
 	}
 	
-	private Vector2D getDotVector2d(float radius, Vector2D mainVector2d, double speed) {
-		double cycleSize = 2.0 * Math.PI * (double) radius * (180.0 / 360.0);
-		float currentWidth = ((float) speed / 200f) * (float) cycleSize;
-		double angle = (Math.round(currentWidth * 180f / ((float) Math.PI * radius))*100)/100;
+	private Vector2D getDotVector2dFromSpeed(float radius, Vector2D mainVector2d, double speed) {
+		double angle = getDotAngle(radius, mainVector2d, speed);
 		
 		double x = (radius * Math.cos(Math.toRadians(angle)));
 		double y = (radius * Math.sin(Math.toRadians(angle)));
 		
 		return new Vector2D(mainVector2d.getX() - (float) x, mainVector2d.getY() - (float) y);
+	}
+	
+	private Vector2D getDotVector2dFromAngle(float radius, Vector2D mainVector2d, double angle) {
+		double x = (radius * Math.cos(Math.toRadians(angle)));
+		double y = (radius * Math.sin(Math.toRadians(angle)));
+		
+		return new Vector2D(mainVector2d.getX() - (float) x, mainVector2d.getY() - (float) y);
+	}
+	
+	private double getDotAngle(float radius, Vector2D mainVector2d, double speed) {
+		double cycleSize = 2.0 * Math.PI * (double) radius * (tachoAngle / 360.0);
+		float currentWidth = ((float) speed / (float) maxSpeed) * (float) cycleSize;
+		double angle = (Math.round(currentWidth * (float) tachoAngle / ((float) Math.PI * radius))*100)/100;
+		angle -= tachoAngle - 180.0;
+		return angle;
 	}
 
 	/*
@@ -377,5 +406,37 @@ public class RealTacho extends Tacho {
 	@Override
 	public VehicleData getVehicleData() {
 		return vehicleData;
+	}
+	
+	/**
+	 * set the background color of the tacho
+	 * @param color the background color of the tacho
+	 */
+	public static void setColor(Color color) {
+		IndividuelRealTacho.color = color;
+	}
+	
+	/**
+	 * get the color of the tacho
+	 * @return color the color of the tacho
+	 */
+	public static Color getColor() {
+		return color;
+	}
+	
+	/**
+	 * set the angle of the tacho
+	 * @param tachoAngle the angle of the tacho
+	 */
+	public static void setTachoAngle(double tachoAngle) {
+		IndividuelRealTacho.tachoAngle = tachoAngle;
+	}
+	
+	/**
+	 * set the limit of the tacho
+	 * @param maxSpeed the limit of the tacho
+	 */
+	public static void setMaxSpeed(int maxSpeed) {
+		IndividuelRealTacho.maxSpeed = maxSpeed;
 	}
 }

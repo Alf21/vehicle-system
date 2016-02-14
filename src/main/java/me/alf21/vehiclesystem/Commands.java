@@ -1,6 +1,7 @@
 package me.alf21.vehiclesystem;
 
 import me.alf21.tacho.BlockBarTacho;
+import me.alf21.tacho.IndividuelRealTacho;
 import me.alf21.tacho.RealTacho;
 import net.gtaun.shoebill.common.command.Command;
 import net.gtaun.shoebill.common.command.CommandHelp;
@@ -25,9 +26,13 @@ public class Commands {
 	@CommandHelp("/tacho [id]")
 	public boolean tacho(Player player, int id)
 	{
-		Tacho tacho = (Tacho) new BlockBarTacho(player);
-		if(id == 1)
-			tacho = (Tacho) new RealTacho(player);
+		Tacho tacho;
+		switch(id) {
+			case 1: tacho = (Tacho) new RealTacho(player); break;
+			case 2: tacho = (Tacho) new IndividuelRealTacho(player); break;
+			default: tacho = (Tacho) new BlockBarTacho(player); break;
+		}
+		
 		PlayerData playerLifecycle = VehicleSystem.getInstance().getPlayerLifecycleHolder().getObject(player, PlayerData.class);
 		if(playerLifecycle.getTacho() != null) {
 			playerLifecycle.getTacho().destroy();

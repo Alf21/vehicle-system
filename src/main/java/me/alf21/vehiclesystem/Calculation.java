@@ -1,17 +1,15 @@
 package me.alf21.vehiclesystem;
 
 import net.gtaun.shoebill.data.Color;
-import net.gtaun.shoebill.data.Velocity;
 import net.gtaun.shoebill.object.Vehicle;
 
 public class Calculation {
 	
-	public static float getSpeed(VehicleData vehicleData) {
-		float speed = 0;
+	public static double getSpeed(VehicleData vehicleData) {
+		double speed = 0;
 		Vehicle vehicle = vehicleData.getVehicle();
 		if(vehicle != null) {
-			Velocity velocity = vehicle.getVelocity(); 
-			speed = (float) Math.sqrt(((velocity.getX()*velocity.getX())+(velocity.getY()*velocity.getY())+(velocity.getZ()*velocity.getZ())))*136.666667f;
+			speed = vehicle.getVelocity().speed3d()*136.666667;
 		}
 		return speed;
 	}
