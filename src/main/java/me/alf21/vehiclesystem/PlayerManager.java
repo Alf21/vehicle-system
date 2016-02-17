@@ -7,14 +7,19 @@ package me.alf21.vehiclesystem;
 
 import java.io.IOException;
 
+
 import me.alf21.vehiclesystem.Tacho;
 import me.alf21.tacho.BlockBarTacho;
 import me.alf21.vehiclesystem.VehicleSystem;
 import net.gtaun.shoebill.common.command.CommandGroup;
+import net.gtaun.shoebill.common.command.CommandParameter;
 import net.gtaun.shoebill.common.command.PlayerCommandManager;
+import net.gtaun.shoebill.constant.PlayerKey;
 import net.gtaun.shoebill.constant.PlayerState;
 import net.gtaun.shoebill.event.player.PlayerStateChangeEvent;
+import net.gtaun.shoebill.event.vehicle.VehicleUpdateEvent;
 import net.gtaun.shoebill.object.Player;
+import net.gtaun.shoebill.object.Vehicle;
 import net.gtaun.util.event.EventManager;
 import net.gtaun.util.event.HandlerPriority;
 
@@ -37,20 +42,20 @@ public class PlayerManager
 		playerCommands.registerCommands(new Commands()); 
 		commandManager.registerChildGroup(playerCommands, "player");
 		
-		commandManager.setUsageMessageSupplier((player, command, prefix, params, help) -> { 
-			String message;
-            if(help == null)
+		commandManager.setUsageMessageSupplier((player, prefix, command) -> { 
+            String message;
+            if(command.getHelpMessage() == null)
             {
             	message = prefix + command;
-	            for (String param : params) {
+	            for (CommandParameter param : command.getParameters()) {
 	                message += " [" + param + "]"; 
 	            }
             }
             else {
-            	message = help;
+            	message = command.getHelpMessage();
             }
             return message; 
-		}); 
+        }); 
 		
 	//--
 
@@ -70,13 +75,27 @@ public class PlayerManager
 			Player player = e.getPlayer();
 			playerLifecycle = VehicleSystem.getInstance().getPlayerLifecycleHolder().getObject(player, PlayerData.class);
 			if(playerLifecycle.getTacho() != null) {
+				playerLifecycle.getTacho().getVehicleData().setOldVelocity(null);
 				playerLifecycle.getTacho().destroy();
 				playerLifecycle.setTacho(null);
+				playerLifecycle.getTimer().stop();
 			}
 			if(player.getState() == PlayerState.DRIVER || player.getState() == PlayerState.PASSENGER) {
 				playerLifecycle.setTacho((Tacho) new BlockBarTacho(player));
 				playerLifecycle.getTacho().create();
 				playerLifecycle.getTacho().show();
+				playerLifecycle.getTimer().start();
+			}
+		});
+		
+		eventManager.registerHandler(VehicleUpdateEvent.class, (e) -> {
+			Player player = e.getPlayer();
+			Vehicle vehicle = e.getVehicle();
+			VehicleData vehicleData = VehicleSystem.getVehicleData(player);
+			if(player != null) {
+				if(vehicleData.getOldVelocity() != null && player.getKeyState().isKeyPressed(PlayerKey.FIRE))
+					Calculation.boostVehicle(vehicleData, VehicleSystem.getHandling(vehicle.getModelName()).getTransmission().getMaxVelocity());
+				vehicleData.setOldVelocity(vehicle.getVelocity());
 			}
 		});
 	}

@@ -10,7 +10,7 @@ public class Handling {
 		private String name;
 		private VehicleType vehicleType;
 		private double mass;
-		private	double turnmass; 
+		private	double turnMass; 
 		private	double drag; 
 		private	Vector3D centreOfMass; 
 		private	int boy; 
@@ -22,14 +22,17 @@ public class Handling {
 		private double seat;
 		private double col;
 		private int cost;
-		private	String modelFlagsHEX;
-		private	String handlingFlagsHEX;
+		private	ModelFlags modelFlags;
+		private	HandlingFlags handlingFlags;
 		private	int frontLights;
 		private	int rearLights;
 		private	AnimData animData;
 		private BoatData boatData;
 		private BikeData bikeData;
 		private PlaneData planeData;
+
+	//custom functions
+		private double tankSize;
 		
 	/**
 	 * @param name vehicle identifier [14 characters max]
@@ -74,7 +77,7 @@ public class Handling {
 			String name,
 			VehicleType vehicleType,
 			double mass, 
-			double turnmass, 
+			double turnMass, 
 			double drag, 
 			double centreOfMassX, double centreOfMassY, double centreOfMassZ, 
 			int boy, 
@@ -95,7 +98,7 @@ public class Handling {
 		this.name = name;
 		this.vehicleType = vehicleType;
 		this.mass = mass;
-		this.turnmass = turnmass;
+		this.turnMass = turnMass;
 		this.drag = drag;
 		this.centreOfMass = new Vector3D((float) centreOfMassX, (float) centreOfMassY, (float) centreOfMassZ);
 		this.boy = boy;
@@ -122,8 +125,8 @@ public class Handling {
 		this.seat = seat;
 		this.col = col;
 		this.cost = cost;
-		this.modelFlagsHEX = modelFlagsHEX;
-		this.handlingFlagsHEX = handlingFlagsHEX;
+		this.modelFlags = new ModelFlags(modelFlagsHEX);
+		this.handlingFlags = new HandlingFlags(handlingFlagsHEX);
 		this.frontLights = frontLights;
 		this.rearLights = rearLights;
 		int i = 0;
@@ -160,8 +163,8 @@ public class Handling {
 	/**
 	 * @return fTurnMass //was////Dimensions.x [0.0 > x > 20.0]
 	 */
-	public double getTurnmass() {
-		return turnmass;
+	public double getTurnMass() {
+		return turnMass;
 	}
 	
 	/**
@@ -250,10 +253,10 @@ public class Handling {
 	 * 6th digit	1: AXLE_R_NOTILT	2: AXLE_R_SOLID		4: AXLE_R_MCPHERSON		8: AXLE_R_REVERSE<br>
 	 * 7th digit	1: IS_BIKE			2: IS_HELI			4: IS_PLANE				8: IS_BOAT<br>
 	 * 8th digit	1: BOUNCE_PANELS	2: DOUBLE_RWHEELS	4: FORCE_GROUND_CLEARANCE	8: IS_HATCHBACK<br>
-	 * @return modelFlags!!!  WARNING - Now written HEX for easier reading of flags
+	 * @return modelFlags - extracted from HEX
 	 */
-	public String getModelFlagsHEX() {
-		return modelFlagsHEX;
+	public ModelFlags getModelFlags() {
+		return modelFlags;
 	}
 	
 	/**
@@ -265,10 +268,10 @@ public class Handling {
 	 * 6th digit	1: OFFROAD_ABILITY	2: OFFROAD_ABILITY2	4: HALOGEN_LIGHTS		8: PROC_REARWHEEL_1ST<br>
 	 * 7th digit	1: USE_MAXSP_LIMIT	2: LOW_RIDER		4: STREET_RACER<br>
 	 * 8th digit	1: SWINGING_CHASSIS<br>
-	 * @return handlingFlags - written in HEX
+	 * @return handlingFlags - extracted from HEX
 	 */
-	public String getHandlingFlagsHEX() {
-		return handlingFlagsHEX;
+	public HandlingFlags getHandlingFlags() {
+		return handlingFlags;
 	}
 	
 	/**
@@ -335,5 +338,22 @@ public class Handling {
 	 */
 	public PlaneData getPlaneData() {
 		return planeData;
+	}
+	
+//////////////////////////
+//	custom functions	//
+//////////////////////////
+	/**
+	 * @return tankSize based on default size and mass
+	 */
+	public double getTankSize() {
+		return tankSize;
+	}
+	
+	/**
+	 * @param maxTank the maximal tank size
+	 */
+	public void setTankSize(double tankSize) {
+		this.tankSize = tankSize;
 	}
 }

@@ -52,12 +52,6 @@ public class BlockBarTacho extends Tacho {
 		Vehicle vehicle = player.getVehicle();
 		if(vehicle != null) {
 			vehicleData = VehicleSystem.getVehicleData(player);
-			if(vehicleData == null) {
-				vehicleData = new VehicleData(vehicle);
-				vehicleData.setHealth(vehicle.getHealth());
-				vehicleData.setName(vehicle.getModelName());
-				vehicleData.setTank(100);
-			}
 				
 			box = PlayerTextdraw.create(player, 560, 337);
 			box.setText("_");
@@ -334,13 +328,6 @@ public class BlockBarTacho extends Tacho {
 	public void update() {
 		Vehicle vehicle = player.getVehicle();
 		if(isCreated() && vehicle != null) {
-			if(vehicleData.getTank() >= 1) {
-				if(vehicle.getState().getEngine() == 0)
-					vehicle.getState().setEngine(1);
-				vehicleData.setTank(vehicleData.getTank()-0.1f);
-			}
-			else vehicle.getState().setEngine(0);
-			
 			healthBar.hide();
 			tankBar.hide();
 			
@@ -380,7 +367,7 @@ public class BlockBarTacho extends Tacho {
 	
 
 	private void createTankBar() {
-		BoxHeight boxHeight = new BoxHeight(593.5f, 399.85f, 423.85f, 0.5f, 0.85f, 3.5f, vehicleData.getTank(), 100);
+		BoxHeight boxHeight = new BoxHeight(593.5f, 399.85f, 423.85f, 0.5f, 0.85f, 3.5f, (float) vehicleData.getTank(), (float) vehicleData.getMaxTankSize());
 		
 		tankBar = PlayerTextdraw.create(player, boxHeight.getPosition());
 		tankBar.setText("_");
@@ -393,7 +380,7 @@ public class BlockBarTacho extends Tacho {
 		tankBar.setProportional(true);
 		tankBar.setShadowSize(1);
 		tankBar.setUseBox(true);
-		tankBar.setBoxColor(Calculation.getBoxColor(COLOR_RED, COLOR_GREEN, vehicleData.getTank(), 100));
+		tankBar.setBoxColor(Calculation.getBoxColor(COLOR_RED, COLOR_GREEN, (float) vehicleData.getTank(), (float) vehicleData.getMaxTankSize()));
 		tankBar.setTextSize(0, -68);
 		tankBar.setSelectable(false);
 	}

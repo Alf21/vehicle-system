@@ -49,6 +49,7 @@ public class Transmission {
 	}
 	
 	/**
+	 * engine drive :- (F)ront, (R)ear, (4)-wheel drive
 	 * @return TransmissionData.nDriveType, [F/R/4]
 	 */
 	public DriveType getDriveType() {
@@ -56,6 +57,7 @@ public class Transmission {
 	}
 	
 	/**
+	 * engine type :- (P)etrol, (D)iesel, (E)lectric
 	 * @return TransmissionData.nEngineType, [P/D/E];
 	 */
 	public EngineType getEngineType() {

@@ -1,5 +1,6 @@
 package me.alf21.vehiclesystem;
 
+import net.gtaun.shoebill.data.Velocity;
 import net.gtaun.shoebill.object.Destroyable;
 import net.gtaun.shoebill.object.Vehicle;
 
@@ -7,9 +8,11 @@ import net.gtaun.shoebill.object.Vehicle;
 public class VehicleData implements Destroyable {
 	
 	private float health;
-	private float tank;
+	private double tank;
+	private double maxTankSize;
 	private String name;
 	private Vehicle vehicle;
+	private Velocity oldVelocity;
 	
 	public VehicleData(Vehicle vehicle) {
 		this.vehicle = vehicle;
@@ -30,16 +33,32 @@ public class VehicleData implements Destroyable {
 		this.name = name;
 	}
 	
-	public float getTank() {
+	public double getTank() {
 		return tank;
 	}
-	public void setTank(float tank) {
+	public void setTank(double tank) {
 		this.tank = tank;
 	}
 	
 	
 	public Vehicle getVehicle() {
 		return vehicle;
+	}
+	
+	
+	public double getMaxTankSize() {
+		return maxTankSize;
+	}
+	public void setMaxTankSize(double maxTankSize) {
+		this.maxTankSize = maxTankSize;
+	}
+	
+	
+	public Velocity getOldVelocity() {
+		return oldVelocity;
+	}
+	public void setOldVelocity(Velocity oldVelocity) {
+		this.oldVelocity = oldVelocity;
 	}
 
 	/*

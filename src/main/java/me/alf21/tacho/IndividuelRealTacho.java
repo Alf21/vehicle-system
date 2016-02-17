@@ -57,12 +57,6 @@ public class IndividuelRealTacho extends Tacho {
 			}
 			
 			vehicleData = VehicleSystem.getVehicleData(player);
-			if(vehicleData == null) {
-				vehicleData = new VehicleData(vehicle);
-				vehicleData.setHealth(vehicle.getHealth());
-				vehicleData.setName(vehicle.getModelName());
-				vehicleData.setTank(100);
-			}
 			
 			box = PlayerTextdraw.create(player, 564, 355);
 			box.setText("_");
@@ -157,7 +151,7 @@ public class IndividuelRealTacho extends Tacho {
 	}
 
 	private void createTankBar() {
-		BoxHeight boxHeight = new BoxHeight(maxSpeed>=100?592:594, 385, 435, 0.5f, -0.5f, 5, vehicleData.getTank(), 100);
+		BoxHeight boxHeight = new BoxHeight(maxSpeed>=100?592:594, 385, 435, 0.5f, -0.5f, 5, (float) vehicleData.getTank(), (float) vehicleData.getMaxTankSize());
 		
 		tankBar = PlayerTextdraw.create(player, boxHeight.getPosition());
 		tankBar.setText("_");
@@ -170,7 +164,7 @@ public class IndividuelRealTacho extends Tacho {
 		tankBar.setProportional(true);
 		tankBar.setShadowSize(1);
 		tankBar.setUseBox(true);
-		tankBar.setBoxColor(Calculation.getBoxColor(COLOR_RED, COLOR_GREEN, vehicleData.getTank(), 100));
+		tankBar.setBoxColor(Calculation.getBoxColor(COLOR_RED, COLOR_GREEN, (float) vehicleData.getTank(), (float) vehicleData.getMaxTankSize()));
 		tankBar.setTextSize(0, 11);
 		tankBar.setSelectable(false);
 	}
@@ -293,12 +287,7 @@ public class IndividuelRealTacho extends Tacho {
 	public void update() {
 		Vehicle vehicle = player.getVehicle();
 		if(isCreated() && vehicle != null) {
-			if(vehicleData.getTank() >= 1) {
-				if(vehicle.getState().getEngine() == 0)
-					vehicle.getState().setEngine(1);
-				vehicleData.setTank(vehicleData.getTank()-0.1f);
-			}
-			else {
+			if(vehicleData.getTank() < 1) {
 				vehicle.getState().setEngine(0);
 				player.sendGameText(3000, 3, "Tank is empty!");
 			}

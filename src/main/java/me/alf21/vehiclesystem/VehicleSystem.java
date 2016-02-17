@@ -19,6 +19,7 @@ import me.alf21.handling.boatData.BoatData;
 import me.alf21.handling.planeData.PlaneData;
 import net.gtaun.shoebill.common.player.PlayerLifecycleHolder;
 import net.gtaun.shoebill.object.Player;
+import net.gtaun.shoebill.object.Vehicle;
 import net.gtaun.shoebill.resource.Plugin;
 import net.gtaun.util.event.EventManager;
 import net.gtaun.util.event.EventManagerNode;
@@ -34,6 +35,7 @@ public class VehicleSystem extends Plugin {
 	private EventManager eventManager;
     private PlayerLifecycleHolder playerLifecycleHolder;
     private EventManagerNode eventManagerNode;
+    private static ArrayList<VehicleData> vehicleDatas;
     private static ArrayList<Handling> handlings;
     
 	public static VehicleSystem getInstance() {
@@ -69,6 +71,7 @@ public class VehicleSystem extends Plugin {
         playerLifecycleHolder = new PlayerLifecycleHolder(eventManager);
         playerLifecycleHolder.registerClass(PlayerData.class);
 		playerManager = new PlayerManager();
+		vehicleDatas = new ArrayList<VehicleData>();
 		initializeVehicleBasicDatas();
 		System.out.println("[VEHICLESYSTEM] initialized");
 	}
@@ -90,7 +93,30 @@ public class VehicleSystem extends Plugin {
     }
 
 	public static VehicleData getVehicleData(Player player) {
-		//TODO initialize the vehicleDatas and match them
+		Vehicle vehicle = player.getVehicle();
+		if(vehicle != null) {
+			for(VehicleData vehicleData : vehicleDatas) {
+				if(vehicleData.getVehicle() == vehicle)
+					return vehicleData;
+			}
+			VehicleData vehicleData = createVehicleData(player);
+			vehicleDatas.add(vehicleData);
+			return vehicleData;
+		}
+		return null;
+	}
+
+	public static VehicleData createVehicleData(Player player) {
+		Vehicle vehicle = player.getVehicle();
+		if(vehicle != null) {
+			vehicle.getState().set(1, 0, 0, 0, 0, 0, 0);
+			VehicleData vehicleData = new VehicleData(vehicle);
+			vehicleData.setHealth(vehicle.getHealth());
+			vehicleData.setName(vehicle.getModelName());
+			vehicleData.setMaxTankSize(getHandling(vehicle.getModelName()).getTankSize());
+			vehicleData.setTank(getHandling(vehicle.getModelName()).getTankSize());
+			return vehicleData;
+		}
 		return null;
 	}
 
@@ -287,7 +313,8 @@ public class VehicleSystem extends Plugin {
     	handlings.add(new Handling("BOXBURG", VehicleType.CAR, 5500.0, 23489.6, 3.0, 0.0, 0.0, 0.0, 80, 0.82, 0.70, 0.46, 5, 140.0, 14.0, 25.0, DriveType.R, EngineType.D, 4.5, 0.60, 0, 30.0, 0.9, 0.08, 0.0, 0.25, -0.25, 0.35, 0.6, 0.36, 0.40, 22000, "4009", "201", 0, 3, 13));
     	handlings.add(new Handling("FARM_TR1", VehicleType.CAR, 400.0, 400.0, 5.0, 0.0, -0.4, 0.0, 70, 0.60, 0.85, 0.5, 3, 160.0, 20.0, 30.0, DriveType.R, EngineType.E, 5.0, 0.50, 0, 30.0, 1.0, 0.10, 0.0, 0.25, -0.10, 0.5, 0.0, 0.26, 0.50, 9000, "3100", "4", 1, 1, 0));
     	handlings.add(new Handling("UTIL_TR1", VehicleType.CAR, 1000.0, 1354.2, 5.0, 0.0, 0.0, 0.0, 70, 1.00, 0.85, 0.5, 3, 160.0, 20.0, 30.0, DriveType.R, EngineType.E, 5.0, 0.50, 0, 30.0, 2.0, 0.09, 0.0, 0.25, -0.10, 0.5, 0.0, 0.26, 0.50, 9000, "3100", "4", 1, 1, 0));
-    	handlings.add(new Handling("ROLLER", VehicleType.CAR, 1000.0, 1354.2, 4.0, 0.0, 0.0, -0.1, 70, 0.55, 0.85, 0.5, 3, 160.0, 15.0, 30.0, DriveType.FOUR, EngineType.E, 13.0, 0.50, 0, 30.0, 1.0, 0.09, 0.0, 0.28, -0.13, 0.5, 0.0, 0.26, 0.50, 9000, "1100", "8804", 1, 1, 0)); //TODO car?
+    	//handlings.add(new Handling("ROLLER", VehicleType.CAR, 1000.0, 1354.2, 4.0, 0.0, 0.0, -0.1, 70, 0.55, 0.85, 0.5, 3, 160.0, 15.0, 30.0, DriveType.FOUR, EngineType.E, 13.0, 0.50, 0, 30.0, 1.0, 0.09, 0.0, 0.28, -0.13, 0.5, 0.0, 0.26, 0.50, 9000, "1100", "8804", 1, 1, 0)); //TODO car?
+    	handlings.add(new Handling("FAGGIO", VehicleType.BIKE, 1000.0, 1354.2, 4.0, 0.0, 0.0, -0.1, 70, 0.55, 0.85, 0.5, 3, 160.0, 15.0, 30.0, DriveType.FOUR, EngineType.E, 13.0, 0.50, 0, 30.0, 1.0, 0.09, 0.0, 0.28, -0.13, 0.5, 0.0, 0.26, 0.50, 9000, "1100", "8804", 1, 1, 0)); //TODO car?
     	handlings.add(new Handling("BIKE", VehicleType.BIKE, 500.0, 161.7, 4.0, 0.0, 0.05, -0.09, 103, 1.6, 0.9, 0.48, 5, 190.0, 50.0, 5.0, DriveType.R, EngineType.P, 15.0, 0.50, 0, 35.0, 0.85, 0.15, 0.0, 0.15, -0.16, 0.5, 0.0, 0.0, 0.15, 10000, "1002000", "0", 1, 1, 4));
     	handlings.add(new Handling("MOPED", VehicleType.BIKE, 350.0, 119.6, 5.0, 0.0, 0.05, -0.1, 103, 1.8, 0.9, 0.48, 3, 190.0, 30.0, 5.0, DriveType.R, EngineType.P, 14.0, 0.50, 0, 35.0, 1.0, 0.15, 0.0, 0.12, -0.17, 0.5, 0.0, 0.0, 0.11, 10000, "1000000", "0", 1, 1, 5));
     	handlings.add(new Handling("DIRTBIKE", VehicleType.BIKE, 500.0, 195.0, 5.0, 0.0, 0.05, -0.09, 103, 1.6, 0.9, 0.48, 5, 190.0, 50.0, 5.0, DriveType.R, EngineType.P, 14.0, 0.50, 0, 35.0, 0.85, 0.15, 0.0, 0.15, -0.16, 0.5, 0.0, 0.0, 0.15, 10000, "1000000", "0", 1, 1, 7));
@@ -388,5 +415,9 @@ public class VehicleSystem extends Plugin {
 		getHandling("RCBARON").setPlaneData(new PlaneData(0.5, -0.05, -0.006, 0.6, 0.30, 0.015, -0.005, 0.005, 0.2, 0.10, 0.30, 0.2, 1.0, 0.1, 1.0, 0.998, 0.996, 0.990, 10.0, 40.0, 10.0));
 		getHandling("RCGOBLIN").setPlaneData(new PlaneData(0.20, 0.75, -0.001, 0.05, 0.10, 0.006, 6.0, 0.006, 6.0, 0.7, 0.015, 0.2, 1.0, 0.1, 0.989, 0.850, 0.860, 0.992, 0.0, 0.0, 7.0));
 		getHandling("RCRAIDER").setPlaneData(new PlaneData(0.25, 0.6, -0.002, 0.05, 0.10, 0.009, 5.0, 0.009, 5.0, 0.4, 0.008, 0.2, 1.0, 0.1, 0.989, 0.880, 0.880, 0.998, 0.0, 0.0, 5.0));
+    
+		handlings.forEach((handling) -> {
+			handling.setTankSize(Calculation.getTankSize(handling));
+		});
     }
 }
